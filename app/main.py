@@ -1,5 +1,6 @@
 import requests
 from selenium import webdriver
+from selenium.webdriver.firefox.options import Options
 
 
 def get_entity_list(organization):
@@ -8,7 +9,7 @@ def get_entity_list(organization):
             "regionNumber": None,
             "onlyActive": False,
             "startRowIndex": 0,
-            "pageSize": 1000000,
+            "pageSize": 2,
             "code": organization['code'],
             "name": organization['name'],
             "legalCase": None
@@ -17,7 +18,7 @@ def get_entity_list(organization):
     return response.json()
 
 
-def get_messages_id(guid):
+def get_messages_info(guid):
     response = requests.post("https://fedresurs.ru/backend/companies/publications", json={
         "guid": guid,
         "pageSize": 1000000,
@@ -40,6 +41,12 @@ def get_messages_id(guid):
     return response.json()['pageData']
 
 
+def build_options():
+    options = Options()
+    options.headless = True
+    return options
+
+
 def main():
     print("Введите название или идентификатор организации организации:")
     organization = dict.fromkeys(['code', 'name'])
@@ -51,13 +58,28 @@ def main():
 
     entity_list = get_entity_list(organization)
     if len(entity_list['pageData']) > 0:
-        driver = webdriver.Chrome('driver/chromedriver')
+        driver = webdriver.Firefox(options=build_options(), executable_path="driver/geckodriver")
+        result = []
         for entity in entity_list['pageData']:
-            messages = get_messages_id(entity['guid'])
+            messages = get_messages_info(entity['guid'])
+            message_list = []
             for message in messages:
                 url = "https://bankrot.fedresurs.ru/MessageWindow.aspx?ID=" + message['guid']
-                print(message['guid'])
-                print(driver.get(url))
+                driver.get(url)
+                data = {
+                    "guid": message['guid'],
+                    "text": driver.find_element_by_class_name("msg").text[7:],
+                    "date": message['datePublish'],
+                    "url": url
+                }
+                message_list.append(data)
+
+            if len(message_list) > 0:
+                result.append({entity['guid']: message_list})
+            else:
+                result.append({entity['guid']: "No bankrupt-themed messages."})
+
+        print(result)
 
     else:
         print("No such organizations")
