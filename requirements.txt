@@ -2,3 +2,5 @@ requests==2.22.0
 firefox=68.0
 selenium==3.141.0
 flask==1.1.1
+rq==1.0
+redis==3.2.1
