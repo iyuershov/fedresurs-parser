@@ -2,3 +2,4 @@
 *.log
 *.rdb
 __pycache__
+*.out
