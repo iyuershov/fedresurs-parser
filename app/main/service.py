@@ -3,7 +3,6 @@ import requests
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 
-
 # Получение списка организаций по ключевой фразе (название, инн или огрн)
 def get_entity_list(organization):
     response = requests.post('https://fedresurs.ru/backend/companies/search', json={
@@ -58,7 +57,7 @@ def get_messages(organization):
     if len(entity_list['pageData']) > 0:
 
         # Создаем экземпляра headless-firefox для получения текста сообщения
-        driver = webdriver.Firefox(options=build_options(), executable_path="driver/geckodriver")
+        driver = webdriver.Firefox(options=build_options(), executable_path="/fedresurs/app/driver/geckodriver")
         result = dict()
 
         for entity in entity_list['pageData']:

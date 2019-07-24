@@ -1,6 +1,6 @@
 import redis
 
-from rq import Queue, Worker
+from rq import Queue
 from rq.registry import FinishedJobRegistry, StartedJobRegistry
 from rq.job import Job
 from flask import Flask, request, abort, jsonify
@@ -10,6 +10,7 @@ app = Flask(__name__)
 
 connection = redis.Redis(host='redis', port=6379)
 queue = Queue(connection=connection)
+
 
 @app.route('/tasks', methods=['POST'])
 def create_task():
@@ -64,7 +65,7 @@ def get_task_list():
     finished_job_ids = finished_registry.get_job_ids()
     for finished_job_id in finished_job_ids:
         j = Job.fetch(finished_job_id, connection=connection)
-        finished_info = dict(guid=j.id, status=j.get_status())
+        finished_info = {"guid": j.id}
         finished.append(finished_info)
 
     return jsonify({
