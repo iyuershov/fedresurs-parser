@@ -11,7 +11,7 @@ services:
 
   rq-worker:
     build: ./app
-    command: rq worker -u redis://redis:6379 --worker-ttl -1 --results-ttl -1
+    command: rq worker -u redis://redis:6379 --results-ttl -1
     depends_on:
       - redis
 

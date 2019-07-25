@@ -2,11 +2,11 @@
 
 ### 1. Запуск
 ```bash
-git clone https://github.com/iyuershov/fedresurs-parser.git && docker-compose up
+docker-compose up
 ```
 
 ### 2. Работа с сервисом
-* Создание задачи:
+* #####Создание задания:
   ```HTTP
   POST /tasks HTTP/1.1
   Content-Type: application/json
@@ -21,7 +21,7 @@ git clone https://github.com/iyuershov/fedresurs-parser.git && docker-compose up
   {
     "task": "[guid задания]"
   }
-* Получение списка заданий:
+* #####Получение списка заданий:
   ```HTTP
   GET /tasks HTTP/1.1
   Host: localhost:5000
@@ -29,10 +29,29 @@ git clone https://github.com/iyuershov/fedresurs-parser.git && docker-compose up
   Возваращаемое значение:
   ```
   {
-  "finished": [
-    {
-      "guid": "d0148fd5-c6fa-4f4d-8254-d9fc166e7973"
-    }
-  ],
-  "tasks": []
-}
+    "tasks": [
+        {
+            "guid": "[guid задания]",
+            "status": "[статус выполнения задания]"
+        }
+    ]
+  }
+  ```
+* #####Получение результата задания:
+  ```HTTP
+  GET /tasks/<guid> HTTP/1.1
+  Host: localhost:5000
+  ```
+  Возвращаемое значение
+  ```
+  {
+    "[guid организации]": [
+        {
+            "id": "[id сообщения]",
+            "text": "[текст сообщения]",
+            "date": "[дата публикации]",
+            "url": "[url сообщения]"
+        }
+     ]
+  }
+  ```
