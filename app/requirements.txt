@@ -1,3 +1,4 @@
 rq==1.0
 requests
 selenium
+click

@@ -2,6 +2,7 @@ import requests
 
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
+# from rq.decorators import job
 
 # Получение списка организаций по ключевой фразе (название, инн или огрн)
 def get_entity_list(organization):
@@ -10,7 +11,7 @@ def get_entity_list(organization):
             "regionNumber": None,
             "onlyActive": False,
             "startRowIndex": 0,
-            "pageSize": 3,
+            "pageSize": 10000000,
             "code": organization['code'],
             "name": organization['name'],
             "legalCase": None
@@ -23,7 +24,7 @@ def get_entity_list(organization):
 def get_messages_info(entity_guid):
     response = requests.post("https://fedresurs.ru/backend/companies/publications", json={
         "guid": entity_guid,
-        "pageSize": 3,
+        "pageSize": 10000000,
         "startRowIndex": 0,
         "startDate": None,
         "endDate": None,
@@ -49,7 +50,7 @@ def build_options():
     options.headless = True
     return options
 
-
+# @job('default', timeout=1)
 def get_messages(organization):
     # Получаем список компаний по заданным параметрам
     entity_list = get_entity_list(organization)
@@ -70,9 +71,12 @@ def get_messages(organization):
                 driver.get(url)
                 text = driver.find_element_by_class_name('msg').text
 
+                if '\n' in text:
+                    text = text.split('\n')[1]
+
                 data = {
                     "id": message['guid'],
-                    "text": text.split('\n')[1],
+                    "text": text,
                     "date": message['datePublish'],
                     "url": url
                 }
