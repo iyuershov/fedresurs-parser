@@ -72,7 +72,7 @@ def get_messages(organization):
 
                 data = {
                     "id": message['guid'],
-                    "text": text,
+                    "text": text.split('\n')[1],
                     "date": message['datePublish'],
                     "url": url
                 }
